@@ -140,6 +140,7 @@ hostname -F /etc/hostname
 ### Common packages
 ``` sh
 apk add python3 py3-pi
+apk add tcpdump
 
 ```
 
