@@ -7,7 +7,7 @@
 ### VBOX SETUP 
 
 1. Download virtual box 
-2. Download Alpine Linux ISO here: https://www.alpinelinux.org/downloads/ and download the ISO for X86 64 under the "Virtual" 
+2. Download Alpine Linux ISO here: https://www.alpinelinux.org/downloads/ and download the ISO for X86 64 under "Virtual" 
 3. Create a new virtual machine in virtual box using the downloaded ISO.
     - Select the path to the downloaded ISO for ISO image 
     - Under Type, select "Linux" 
@@ -95,7 +95,7 @@ reboot
 apk add openssh 
 
 vi /etc/ssh/sshd_config
-# Remove the hashtag at "PermitRootLogin" and the text after with "yes"
+# Remove the pound sign at "PermitRootLogin" and the text after with "yes"
 
 rc-update add sshd default
 rc-service sshd start
