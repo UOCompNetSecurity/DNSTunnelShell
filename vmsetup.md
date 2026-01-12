@@ -4,7 +4,7 @@
 
 
 
-### VBOX SETUP 
+### Virtualbox setup
 
 1. Download virtual box 
 2. Download Alpine Linux ISO here: https://www.alpinelinux.org/downloads/ and download the ISO for X86 64 under "Virtual" 
@@ -14,16 +14,11 @@
     - Under Version, select "Other Linux (64-bit)"
     - Use 4 GB for the virtual hard disk 
 
-4. To make SSH work for virtual box, On the virtual box GUI with this vm highlighted, go to settings -> network -> advanced -> port forwarding and create a new entry with the following entries: 
-    - name: <unique name> protocol: TCP host ip: 127.0.0.1 host port: <unique port> guest ip: LEAVE BLANK guest port: 22
+### Network setup 
 
-
-### NETWORK SETUP 
-
-5. Start up the alpine linux VM and enter "root" as the user login. Then run the following sequence of commands to setup internet access  
+4. Temporary internet access for downloading packages. Start up the alpine linux VM and enter "root" as the user login. Then run the following sequence of commands to setup internet access  
 
 ``` sh 
-ip link set lo up 
 ip link set eth0 up 
 
 udhcpc -i eth0 
@@ -32,9 +27,9 @@ udhcpc -i eth0
 
 ```
 
-### REPO SETUP 
+### Repo Setup
 
-6. Run the following commands to be able to download packages 
+5. Run the following commands to be able to download packages 
 
 ``` sh 
 setup-apkrepos -c
@@ -43,9 +38,9 @@ setup-apkrepos -c
 
 ```
 
-### ALLOCATE NON-VOLATILE SPACE 
+### Allocate Disk Space 
 
-7. Run the following commands to make the changes persist among vm startup   
+6. Run the following commands to make the changes persist among vm startup   
 
 ``` sh 
 apk add syslinux blkid
@@ -57,30 +52,34 @@ setup-disk
 
 ```
 
-8. On the virtual box GUI with this VM highlighted, go to Settings -> Storage -> Under Controller IDE, press the bar with the ISO name -> press the blue circle icon -> press remove from virtual device 
+7. On the virtual box GUI with this VM highlighted, go to Settings -> Storage -> Under Controller IDE, press the bar with the ISO name -> press the blue circle icon -> press remove from virtual device 
 
-9. Back in the VM, enter the following command
+8. Back in the VM, enter the following command
 ``` sh 
 poweroff
 
 ```
 
-10. Restart the VM 
+9. Restart the VM 
 
-### MAKE NETWORK ACCESS PERSISTANT 
+### Make persistant network access
 
-11. Run the following commands to make network access setup automatically  
+10. Run the following commands to make network access setup automatically  
 
 ``` sh 
 ip link set lo up 
 ip link set eth0 up 
 rc-update add networking default 
 vi /etc/network/interfaces
-# write the following to this file: auto lo
-#                                   iface lo inet loopback
+# write the following to this file without the pound signs: 
+# auto lo
+# iface lo inet loopback
 
-#                                   auto eth0 
-#                                   iface eth0 inet dhcp 
+# auto eth0 
+# iface eth0 inet static
+#   address 10.0.2.X  (Use a unique host number at the x)
+#   netmask 255.255.255.0
+#   gateway 10.0.2.2
 
 reboot 
 
@@ -88,9 +87,9 @@ reboot
 ```
 
 
-### SETUP SSH 
+### Setup SSH and Port Forwarding
 
-12. Run the following commands to setup ssh 
+11. Run the following commands to setup ssh 
 ``` sh 
 apk add openssh 
 
@@ -105,15 +104,20 @@ passwd
 
 ```
 
-### CONNECT TO THE VM VIA SSH 
+12. To setup the NAT network and port forwarding, in the Virtual Box GUI, go to File -> Tools -> Network Manager -> Nat Networks -> Create -> Enter A Name -> Disable DHCP
+13. Select Port Forwarding, create a new entry with the values:
+    - Name: (UNIQUE NAME HERE) Protocol: TCP Host IP: 127.0.0.1 Host Port (UNIQUE PORT HERE) Guest IP: (IP SET FOR ETH0 IN STEP 11) Guest Port: 22
+14. Click on your VM -> Settings -> Network -> Attached To: -> Select NAT Network -> Select NAT Network Name 
 
-13. The VM can now be connected to via SSH outside of the VM. 
+### SSH Into the VM 
+
+15. The VM can now be connected to via SSH outside of the VM. 
 ``` bash 
 ssh -p <port you used for virtual box port forwarding> root@localhost
 ```
 
-### CHANGE THE HOST NAME 
-14. The hostname of the VM can be changed to disnguish between vm sessions. 
+### Change the Host Name
+16. The hostname of the VM can be changed to disnguish between vm sessions. 
 
 ``` sh 
 setup-hostname
@@ -124,13 +128,13 @@ hostname -F /etc/hostname
 ```
 
 
-### CREATE A COPY VM 
+### Create a copy VM 
 
-15. For creating additional VMs with the same setup, go to the virtual box GUI, right clock on the powered off VM to clone, press Clone
-16. Give the VM a new name, then under MAC address policy, select "Generate new MAC addresses ..." 
-17. Select "Full Clone" 
+17. For creating additional VMs with the same setup, go to the virtual box GUI, right clock on the powered off VM to clone, press Clone
+18. Give the VM a new name, then under MAC address policy, select "Generate new MAC addresses ..." 
+19. Select "Full Clone" 
 
-18. Go to step 14 to give it a new hostname and step 4 to change the ssh port to use  
+20. Go to step 10 to give it a unique IP address in the NAT network, step 13 to setup port forwarding for this VM, and step 16 to setup a host name 
 
 
 
