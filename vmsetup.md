@@ -77,7 +77,7 @@ vi /etc/network/interfaces
 
 # auto eth0 
 # iface eth0 inet static
-#   address 10.0.2.X  (Use a unique host number at the x)
+#   address 10.0.2.X  (Use a 50 for victim, 51 for resolver, 52 for attacker)
 #   netmask 255.255.255.0
 #   gateway 10.0.2.2
 
@@ -137,6 +137,11 @@ hostname -F /etc/hostname
 20. Go to step 10 to give it a unique IP address in the NAT network, step 13 to setup port forwarding for this VM, and step 16 to setup a host name 
 
 
+### Common packages
+``` sh
+apk add python3 py3-pi
+
+```
 
 
 
