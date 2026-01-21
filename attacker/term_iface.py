@@ -181,56 +181,71 @@ class TerminalIFace:
 
         self.input_area.refresh()
 
-    def _print_received(self, message: str):
-        lines = message.splitlines() or [""]
+    def _split_lines(self, message: str, width: int): 
+        with open("DEBUG.txt", "w") as f: 
+            cur_ch_line = 0
+            seperated = []
+
+            seperated_start = 0
+            for i, ch in enumerate(message): 
+                if cur_ch_line >= width - 2: 
+                    seperated.append(message[seperated_start:i - 5])
+                    seperated_start = i - 1
+                    cur_ch_line = 0 
+
+                if ch == '\n': 
+                    cur_ch_line = 0
+                else: 
+                    cur_ch_line += 1
+
+            seperated.append(message[seperated_start:len(message)])
+
+            for i in range(len(seperated)): 
+                seperated[i] = seperated[i] + '\n'
+
+            glued = ""
+            for message in seperated: 
+                glued += message
+
+            output = glued.splitlines()
+
+        return output
+
+
+    def _print_right_win(self, message: str, symbol: str, color: int): 
         height, width = self.right_win.getmaxyx()
+        lines = self._split_lines(message, width)
         if len(lines) + self.cur_right_win_y >= height - 1: 
             self._reset_right_window()
             self.cur_right_win_y = self.start_right_win_y
-        for line in lines:
-            self._print_message(self.right_win, self.cur_right_win_y, line, "+", self.green)
+        for line in lines: 
+            self._print_message(self.right_win, self.cur_right_win_y, line, symbol, color)
             self.cur_right_win_y += 1
 
-    def _print_sent(self, message: str):
-        lines = message.splitlines() or [""]
+    def _print_left_win(self, message: str, symbol: str, color: int): 
         height, width = self.left_win.getmaxyx()
+        lines = self._split_lines(message, width)
         if len(lines) + self.cur_left_win_y >= height - 1: 
             self._reset_left_window()
             self.cur_left_win_y = self.start_left_win_y
         for line in lines:
-            self._print_message(self.left_win, self.cur_left_win_y, f"Sent: {line}", "+", self.green)
+            self._print_message(self.left_win, self.cur_left_win_y, line, symbol, color)
             self.cur_left_win_y += 1
 
-    def _print_queued(self, message: str):
-        lines = message.splitlines() or [""]
-        height, width = self.left_win.getmaxyx()
-        if len(lines) + self.cur_left_win_y >= height - 1: 
-            self._reset_left_window()
-            self.cur_left_win_y = self.start_left_win_y
-        for line in lines:
-            self._print_message(self.left_win, self.cur_left_win_y, f"Command Queued: {line}", "+", self.yellow)
-            self.cur_left_win_y += 1
 
-    def _print_error(self, message: str):
-        lines = message.splitlines() or [""]
-        height, width = self.left_win.getmaxyx()
-        if len(lines) + self.cur_left_win_y >= height - 1: 
-            self._reset_left_window()
-            self.cur_left_win_y = self.start_left_win_y
-        for line in lines:
-            self._print_message(self.left_win, self.cur_left_win_y, f"Error: {line}", "!", self.red)
-            self.cur_left_win_y += 1
+    def _print_received(self, message: str):
+        self._print_right_win(message, "+", self.green)
 
     def _print_probe(self, message: str):
-        lines = message.splitlines() or [""]
-        height, width = self.right_win.getmaxyx()
-        if len(lines) + self.cur_right_win_y >= height - 1: 
-            self._reset_right_window()
-            self.cur_right_win_y = self.start_right_win_y
-        for line in lines:
-            self._print_message(self.right_win, self.cur_right_win_y, line, "*", self.cyan)
-            self.cur_right_win_y += 1
+        self._print_right_win(message, "*", self.cyan)
 
+    def _print_sent(self, message: str):
+        self._print_left_win(f"Sent: {message}", "+", self.green)
 
+    def _print_queued(self, message: str):
+        self._print_left_win(f"Command Queued: {message}", "+", self.yellow)
+
+    def _print_error(self, message: str):
+        self._print_left_win(f"Error: {message}", "!", self.red)
 
 
