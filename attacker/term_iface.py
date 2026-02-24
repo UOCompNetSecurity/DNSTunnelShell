@@ -81,6 +81,8 @@ class TerminalIFace:
             while not self.print_queue.empty(): 
                 message = self.print_queue.get()
                 match message.message_type: 
+                    case PrinterMessageType.CONN: 
+                        self._print_conn()
                     case PrinterMessageType.RECEIVED: 
                         self.received_buffer += message.message
                     case PrinterMessageType.SENT: 
@@ -88,7 +90,7 @@ class TerminalIFace:
                     case PrinterMessageType.ERROR: 
                         self._print_error(message.message)
                     case PrinterMessageType.PROBE: 
-                        self._print_probe(message.message)
+                        self._print_probe("PROBE")
                     case PrinterMessageType.FILE_START: 
                         self.received_buffer = ""
                     case PrinterMessageType.FILE_END: 
@@ -240,6 +242,9 @@ class TerminalIFace:
 
     def _print_sent(self, message: str):
         self._print_left_win(f"Sent: {message}", "+", self.green)
+
+    def _print_conn(self):
+        self._print_left_win(f"Client Connected", "+", self.green)
 
     def _print_queued(self, message: str):
         self._print_left_win(f"Command Queued: {message}", "+", self.yellow)

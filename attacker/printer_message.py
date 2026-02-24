@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 
 class PrinterMessageType(Enum): 
@@ -8,11 +8,12 @@ class PrinterMessageType(Enum):
     PROBE = 4,
     FILE_START = 5,
     FILE_END = 6
+    CONN = 7
 
 @dataclass 
 class PrinterMessage: 
-    message: str 
     message_type: PrinterMessageType
+    message: str = field(default="")
     
 
 
